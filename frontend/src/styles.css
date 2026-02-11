@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-netflix-bg text-white antialiased;
+}
+
+#root {
+  @apply min-h-screen;
+}
