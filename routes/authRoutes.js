@@ -1,17 +1,14 @@
 const express = require('express');
-const {
-  register,
-  login,
-  getProfile,
-  pingExternal,
-} = require('../controllers/authController');
-const { protect } = require('../middleware/authMiddleware');
+const { register, login } = require('../controllers/authController');
 
 const router = express.Router();
 
+/**
+ * Auth routes theo yêu cầu:
+ * - POST /register
+ * - POST /login
+ */
 router.post('/register', register);
 router.post('/login', login);
-router.get('/profile', protect, getProfile);
-router.get('/ping-external', pingExternal);
 
 module.exports = router;
