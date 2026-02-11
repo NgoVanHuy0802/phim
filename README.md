@@ -24,3 +24,18 @@ npm run dev
 
 - `GET /api/phim-moi`
 - `GET /api/phim/:slug`
+
+## Frontend (React + Vite)
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Cấu trúc frontend:
+
+- `src/pages`
+- `src/components`
+- `src/services`
+- `src/context`
