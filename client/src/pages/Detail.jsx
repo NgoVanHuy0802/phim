@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import api from '../services/api';
+import api, { getAuthConfig } from '../services/api';
 
 function Detail() {
   const { slug } = useParams();
@@ -9,6 +9,8 @@ function Detail() {
   const [movieData, setMovieData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [savingFavorite, setSavingFavorite] = useState(false);
+  const [favoriteMessage, setFavoriteMessage] = useState('');
 
   useEffect(() => {
     const fetchMovieDetail = async () => {
@@ -40,6 +42,33 @@ function Detail() {
     navigate(`/watch/${slug}/${episodeSlug}`);
   };
 
+  const handleSaveFavorite = async () => {
+    if (!movie) return;
+
+    try {
+      setSavingFavorite(true);
+      setFavoriteMessage('');
+
+      await api.post(
+        '/favorites',
+        {
+          slug: movie.slug,
+          name: movie.name,
+          poster_url: movie.poster_url || '',
+          thumb_url: movie.thumb_url || '',
+          year: movie.year || null,
+        },
+        getAuthConfig()
+      );
+
+      setFavoriteMessage('Đã lưu vào danh sách yêu thích.');
+    } catch (error) {
+      setFavoriteMessage(error?.response?.data?.message || 'Lưu yêu thích thất bại.');
+    } finally {
+      setSavingFavorite(false);
+    }
+  };
+
   if (loading) return <p className="text-netflix-muted">Đang tải chi tiết phim...</p>;
   if (errorMessage) return <p className="text-red-400">{errorMessage}</p>;
   if (!movie) return <p className="text-red-400">Không tìm thấy dữ liệu phim.</p>;
@@ -60,6 +89,15 @@ function Detail() {
 
         <div className="space-y-2 text-sm text-netflix-muted">
           <h2 className="text-2xl font-bold text-white">{movie.name}</h2>
+          <button
+            type="button"
+            onClick={handleSaveFavorite}
+            disabled={savingFavorite}
+            className="rounded-md bg-netflix-red px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-70"
+          >
+            {savingFavorite ? 'Đang lưu...' : 'Lưu yêu thích'}
+          </button>
+          {favoriteMessage ? <p className="text-xs text-netflix-muted">{favoriteMessage}</p> : null}
           {movie.origin_name ? <p><strong className="text-white">Tên gốc:</strong> {movie.origin_name}</p> : null}
           {movie.year ? <p><strong className="text-white">Năm:</strong> {movie.year}</p> : null}
           {movie.quality ? <p><strong className="text-white">Chất lượng:</strong> {movie.quality}</p> : null}

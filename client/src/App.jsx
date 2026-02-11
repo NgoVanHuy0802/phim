@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppHeader from './components/AppHeader';
 import ProtectedRoute from './components/ProtectedRoute';
 import Detail from './pages/Detail';
+import Favorites from './pages/Favorites';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import NotFoundPage from './pages/NotFoundPage';
@@ -18,6 +19,7 @@ function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<HomePage />} />
+            <Route path="/favorites" element={<Favorites />} />
             <Route path="/detail/:slug" element={<Detail />} />
             <Route path="/watch/:slug/:episodeSlug" element={<Watch />} />
           </Route>

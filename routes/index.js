@@ -1,6 +1,7 @@
 const express = require('express');
 const authRoutes = require('./authRoutes');
 const movieRoutes = require('./movieRoutes');
+const favoriteRoutes = require('./favoriteRoutes');
 
 const router = express.Router();
 
@@ -20,5 +21,8 @@ router.use('/', authRoutes);
 
 // Movie routes (public)
 router.use('/', movieRoutes);
+
+// Favorite routes (protected)
+router.use('/', favoriteRoutes);
 
 module.exports = router;

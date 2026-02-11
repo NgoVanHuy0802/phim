@@ -17,6 +17,9 @@ function AppHeader() {
           <NavLink to="/home" className={linkClass}>
             Trang chủ
           </NavLink>
+          <NavLink to="/favorites" className={linkClass}>
+            Yêu thích
+          </NavLink>
           <NavLink to="/login" className={linkClass}>
             Đăng nhập
           </NavLink>
