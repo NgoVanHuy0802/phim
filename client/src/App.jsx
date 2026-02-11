@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AppHeader from './components/AppHeader';
+import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import Detail from './pages/Detail';
 import Watch from './pages/Watch';
@@ -13,10 +14,15 @@ function App() {
       <main className="page-wrapper">
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/home" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/detail/:slug" element={<Detail />} />
-          <Route path="/watch/:slug/:episodeSlug" element={<Watch />} />
+
+          {/* Protected routes: yêu cầu token trong localStorage */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/detail/:slug" element={<Detail />} />
+            <Route path="/watch/:slug/:episodeSlug" element={<Watch />} />
+          </Route>
+
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
