@@ -106,3 +106,23 @@ body {
 .episode-button:hover {
   background: #eff6ff;
 }
+
+.watch-page {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.video-container {
+  width: 100%;
+  max-width: 960px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video-player {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
