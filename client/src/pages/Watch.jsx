@@ -3,14 +3,6 @@ import Hls from 'hls.js';
 import { Link, useParams } from 'react-router-dom';
 import api from '../services/api';
 
-/**
- * Watch page:
- * - Lấy slug + episodeSlug từ URL
- * - Gọi API /api/phim/:slug để lấy danh sách tập
- * - Tìm link .m3u8 của tập tương ứng
- * - Dùng hls.js để phát video
- * - Có loading state và nút quay lại
- */
 function Watch() {
   const { slug, episodeSlug } = useParams();
   const videoRef = useRef(null);
@@ -31,7 +23,6 @@ function Watch() {
       try {
         setLoading(true);
         setErrorMessage('');
-
         const response = await api.get(`/phim/${slug}`);
         setMovieData(response?.data?.data || null);
       } catch (error) {
@@ -46,17 +37,10 @@ function Watch() {
 
   const selectedEpisode = useMemo(() => {
     const episodes = movieData?.episodes || [];
-
     for (const server of episodes) {
       const item = (server.server_data || []).find((episode) => episode.slug === episodeSlug);
-      if (item) {
-        return {
-          ...item,
-          serverName: server.server_name,
-        };
-      }
+      if (item) return { ...item, serverName: server.server_name };
     }
-
     return null;
   }, [movieData, episodeSlug]);
 
@@ -64,24 +48,18 @@ function Watch() {
 
   useEffect(() => {
     const video = videoRef.current;
+    if (!video || !streamUrl) return undefined;
 
-    if (!video || !streamUrl) {
-      return undefined;
-    }
-
-    // cleanup instance cũ nếu có
     if (hlsRef.current) {
       hlsRef.current.destroy();
       hlsRef.current = null;
     }
 
-    // Safari / native HLS
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = streamUrl;
       return undefined;
     }
 
-    // Trình duyệt cần hls.js
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(streamUrl);
@@ -89,9 +67,7 @@ function Watch() {
       hlsRef.current = hls;
 
       hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (data?.fatal) {
-          setErrorMessage('Không thể phát video. Vui lòng thử lại.');
-        }
+        if (data?.fatal) setErrorMessage('Không thể phát video. Vui lòng thử lại.');
       });
     } else {
       setErrorMessage('Trình duyệt của bạn không hỗ trợ HLS playback.');
@@ -105,50 +81,45 @@ function Watch() {
     };
   }, [streamUrl]);
 
-  if (loading) {
-    return <p>Đang tải video...</p>;
-  }
-
+  if (loading) return <p className="text-netflix-muted">Đang tải video...</p>;
   if (errorMessage) {
     return (
       <section>
-        <Link to={`/detail/${slug}`} className="back-link">
+        <Link to={`/detail/${slug}`} className="inline-block text-sm text-netflix-muted transition hover:text-white">
           ← Quay lại chi tiết phim
         </Link>
-        <p className="error-message">{errorMessage}</p>
+        <p className="mt-3 text-red-400">{errorMessage}</p>
       </section>
     );
   }
-
   if (!selectedEpisode || !streamUrl) {
     return (
       <section>
-        <Link to={`/detail/${slug}`} className="back-link">
+        <Link to={`/detail/${slug}`} className="inline-block text-sm text-netflix-muted transition hover:text-white">
           ← Quay lại chi tiết phim
         </Link>
-        <p className="error-message">Không tìm thấy link phát cho tập này.</p>
+        <p className="mt-3 text-red-400">Không tìm thấy link phát cho tập này.</p>
       </section>
     );
   }
 
   return (
-    <section className="watch-page">
-      <Link to={`/detail/${slug}`} className="back-link">
+    <section className="space-y-3">
+      <Link to={`/detail/${slug}`} className="inline-block text-sm text-netflix-muted transition hover:text-white">
         ← Quay lại chi tiết phim
       </Link>
-
-      <h2>Xem phim</h2>
-      <p>
-        <strong>Tập:</strong> {selectedEpisode.name}
+      <h2 className="text-2xl font-bold">Xem phim</h2>
+      <p className="text-sm text-netflix-muted">
+        <strong className="text-white">Tập:</strong> {selectedEpisode.name}
       </p>
       {selectedEpisode.serverName ? (
-        <p>
-          <strong>Server:</strong> {selectedEpisode.serverName}
+        <p className="text-sm text-netflix-muted">
+          <strong className="text-white">Server:</strong> {selectedEpisode.serverName}
         </p>
       ) : null}
 
-      <div className="video-container">
-        <video ref={videoRef} controls playsInline className="video-player" />
+      <div className="overflow-hidden rounded-xl bg-black shadow-glow">
+        <video ref={videoRef} controls playsInline className="aspect-video w-full bg-black" />
       </div>
     </section>
   );
