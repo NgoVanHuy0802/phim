@@ -60,19 +60,21 @@ const register = asyncHandler(async (req, res) => {
 
 /**
  * POST /api/auth/login
- * Đăng nhập bằng email + password, trả JWT token khi thành công.
+ * Đăng nhập bằng username/email + password, trả JWT token khi thành công.
  */
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
 
-  if (!email || !password) {
-    const error = new Error('Email and password are required.');
+  if ((!username && !email) || !password) {
+    const error = new Error('Username (or email) and password are required.');
     error.statusCode = 400;
     throw error;
   }
 
   // Cần select password vì field này mặc định select: false trong model
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({
+    $or: [{ username }, { email }],
+  }).select('+password');
 
   if (!user) {
     const error = new Error('Invalid email or password.');

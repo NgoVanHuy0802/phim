@@ -15,6 +15,8 @@ router.get('/health', (req, res) => {
 
 // Auth routes
 router.use('/auth', authRoutes);
+// Alias routes để hỗ trợ /api/login và /api/register
+router.use('/', authRoutes);
 
 // Movie routes (public)
 router.use('/', movieRoutes);

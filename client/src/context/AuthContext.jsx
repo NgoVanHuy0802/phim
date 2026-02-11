@@ -20,7 +20,8 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   const login = async (credentials) => {
-    const response = await api.post('/auth/login', credentials);
+    // Gọi endpoint /login (baseURL đang là /api)
+    const response = await api.post('/login', credentials);
     const nextToken = response?.data?.data?.token;
 
     if (!nextToken) {
